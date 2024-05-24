@@ -1,3 +1,22 @@
+<?php
+    session_start();  //funcion para iniciar sesión 
+
+    if (!isset($_SESSION['usuario'])) {  //si no existe la variable sesion llamada usuario imprimira en la pantalla lo siguiente:
+        echo '
+            <script>
+                alert("Debes iniciar sesión, intentalo de nuevo");
+                window.location =  "login.php";
+            </script>
+        ';
+        
+        session_destroy();//sesión finalizada para no entrar a la página deseada
+        die(); //muere el proceso
+
+    }  
+    //sentencia que indica para entrar a la página en caso de que el usuario exista y si no lo regresa a la página de login.php; para revisar si existe el dato y no le da acceso de ver la página.
+
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,8 +37,8 @@
                 </button>
                 <div class="sidebar-logo">      <!--Sección para el logo-->
                     <a href="#">Olympus</a>       <!--Nombre de la empresa o imagen de la empresa-->  
-                </div>     
-            </div>
+                </div> 
+		    </div>
             <ul class="sidebar-nav">  <!--Lista desordenada para el menu-->
                 <li class="sidebar-item">   <!---Comienza el elemento de Inicio--->
                     <a href="index.php" class="sidebar-link">    
@@ -55,8 +74,10 @@
                          </li>
                          <li class="sidebar-item">   <!---Comienza el elemento de--->
                             <a href="lista_usuarios.php" class="sidebar-link">Lista de Usuario</a>
-                           
                          </li>
+                         <li class="sidebar-item">   <!---Comienza el elemento de--->
+                            <a href="lista_cobradores.php" class="sidebar-link">Lista de Cobradores</a>
+				 </li>
                     </ul>
                 </li>
                 <li class="sidebar-item">  <!--Comienza el elemento de Cobradores-->
@@ -66,12 +87,12 @@
                     </a>
                     <ul id="user" class="sidebar-dropdown list-unstyled collapsed" data-bs-parent="#sidebar">
                         <li class="sidebar-item">   <!---Comienza el elemento de--->
-                            <a href="#" class="sidebar-link">Usuario</a>
+                            <a href="mostrar_usuario.php" class="sidebar-link">Usuario</a>
                          </li>
                     </ul>
                 </li>
                 <li class="sidebar-item">   <!--Comienza el elemento Salir-->
-                    <a href="#" class="sidebar-link">    
+                    <a href="controlador/cerrar_sesion.php" class="sidebar-link">    
                         <i class="lni lni-exit"></i>  <!--Icono de Salir-->
                         <span>Salir</span>
                     </a>
@@ -94,46 +115,50 @@
                 </thead>
 
                 <tbody>
-				<?php
-					include("modelo/conexionO.php");
-					$consulta_usuario = mysqli_query($conexion,"select u.id_usuario, u.nombre_usuario, u.usuario, r.rol, u.correo, u.contrasenia from tabla_usuario u inner join tabla_rol r on u.id_rol = r.id_rol;");//la variable para realizar la consulta  
-					while ($dato = mysqli_fetch_array($consulta_usuario)) 
-						{
-							$cod = $dato['id_usuario'];
-							$nombre = utf8_encode($dato['nombre_usuario']);
-							$usuario = utf8_encode($dato['usuario']);
-							$rol = utf8_encode($dato['rol']);
-							$correo = utf8_encode($dato['correo']);
-							$con = $dato['contrasenia'];
+		<?php
+			include("modelo/conexionO.php");
+			$getUser = mysqli_query($conexion,"select u.id_usuario, u.nombre_usuario, u.usuario, r.rol, u.correo, u.contrasenia from tabla_usuario u inner join tabla_rol r on u.id_rol = r.id_rol;");//la variable para realizar la consulta  
+			while ($dato = mysqli_fetch_array($getUser)) 
+				{
+					$cod = $dato['id_usuario'];
+					$nombre = utf8_decode($dato['nombre_usuario']);
+					$usuario = utf8_decode($dato['usuario']);
+					$rol = utf8_decode($dato['rol']);
+					$correo = utf8_decode($dato['correo']);
+					$con = $dato['contrasenia'];
 			
 				?>
 				<tr>
 					<td><?php echo $cod ?></td>
 					<td><?php echo $nombre ?></td>
 					<td><?php echo $usuario ?></td>
-                    <td><?php echo $rol ?></td>
+	                    		<td><?php echo $rol ?></td>
 					<td><?php echo $correo ?></td>
 					<td><?php echo $con ?></td>
-                    <td></td>
-
-					<td><a href="editar_usuarios.php?id=<?php echo $cod ?>"><button class="btn btn-primary me-md-2" type="submit">Editar</button></a></td>
-					<td><a href="eliminar_usuario.php?id=<?php echo $cod ?>"><button class="btn btn-primary" type="submit">Eliminar</button></a></td>
-
+	                    		<td></td>
+					<td>
+	                        		<a href="editar_usuarios.php?id=<?php echo $cod ?>"><button class="btn btn-primary me-md-2" type="submit">Editar</button></a>
+	                    		</td>
+					<td>
+	                        		<a href="controlador/eliminar_usuario.php?id=<?php echo $cod ?>" class=""><button class="btn btn-primary" type="submit">Eliminar</button></a>
+	                    		</td>
 				</tr>	
 				<?php
-						}
+					}
 				mysqli_close($conexion);
 				?>
-				</tbody>
+			</tbody>
                     
                 </table>
-            </div>
+	</div>
             
-    	</div>
-
     </div>
+
+ </div>
 
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script type="text/javascript" src="js/script.js"></script>	
 </html>
+		    
+                           
